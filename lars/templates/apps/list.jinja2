@@ -1,0 +1,6 @@
+{% extends 'container.jinja2' %}
+
+{% block content %}{% for item in items %}
+    {{ loop.index }}. ID: {{ item.doc_id }}
+       {% if loop.index >= 10 %} {% endif %}Name: {{ item.app_name }}
+{% endfor %}{% endblock %}

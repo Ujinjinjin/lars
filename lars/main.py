@@ -1,12 +1,31 @@
-
+import os
 from cement import App, TestApp, init_defaults
 from cement.core.exc import CaughtSignal
+from tinydb import TinyDB
+from cement.utils import fs
+
 from .core.exc import LarsError
+from .controllers.apps import Apps
 from .controllers.base import Base
+from .controllers.parser import Parser
 
 # configuration defaults
 CONFIG = init_defaults('lars')
-CONFIG['lars']['foo'] = 'bar'
+CONFIG['lars']['db_file'] = '~/.lars/db.json'
+
+
+def extend_tinydb(app):
+    db_file = app.config.get('lars', 'db_file')
+
+    # ensure that we expand the full path
+    db_file = fs.abspath(db_file)
+
+    # ensure our parent directory exists
+    db_dir = os.path.dirname(db_file)
+    if not os.path.exists(db_dir):
+        os.makedirs(db_dir)
+
+    app.extend('db', TinyDB(db_file))
 
 
 class Lars(App):
@@ -14,6 +33,10 @@ class Lars(App):
 
     class Meta:
         label = 'lars'
+
+        hooks = [
+            ('post_setup', extend_tinydb),
+        ]
 
         # configuration defaults
         config_defaults = CONFIG
@@ -42,11 +65,13 @@ class Lars(App):
 
         # register handlers
         handlers = [
-            Base
+            Base,
+            Parser,
+            Apps
         ]
 
 
-class LarsTest(TestApp,Lars):
+class LarsTest(TestApp, Lars):
     """A sub-class of Lars that is better suited for testing."""
 
     class Meta:
