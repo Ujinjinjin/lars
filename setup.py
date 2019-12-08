@@ -17,7 +17,7 @@ setup(
     author='Camille Galladjov',
     author_email='ujinjinjin@outlook.com',
     url='https://github.com/Ujinjinjin/lars',
-    license='unlicensed',
+    license='MIT',
     packages=find_packages(exclude=['ez_setup', 'tests*']),
     package_data={'lars': ['templates/*']},
     include_package_data=True,
