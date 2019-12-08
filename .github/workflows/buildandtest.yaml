@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - master
-    paths:
-      - "!.github/workflows/publish.yml"
-      - "!lars/core/version.py"
+    paths-ignore:
+      - ".github/workflows/publish.yml"
+      - "lars/core/version.py"
 
 jobs:
   build:
