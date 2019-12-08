@@ -1,4 +1,4 @@
-# From txt to sqlite3 parser of logs
+# From .log to sqlite3 parser of logs
 
 ## Installation
 
