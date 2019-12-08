@@ -7,6 +7,14 @@ on:
     paths-ignore:
       - ".github/workflows/publish.yml"
       - "lars/core/version.py"
+    paths:
+      - "lars/*"
+      - "tests/*"
+      - "setup.py"
+      - "setup.cfg"
+      - "Makefile"
+      - "requirements.txt"
+      - ".github/workflows/buildandtest.yml"
 
 jobs:
   build:
