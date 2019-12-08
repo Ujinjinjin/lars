@@ -112,11 +112,11 @@ class Apps(Controller):
             return
 
         if p_name is not None:
-            apps = self.app.db.all()
-            for app in apps:
-                if app['app_name'] == p_name:
+            stored_apps = self.app.db.all()
+            for stored_app in stored_apps:
+                if stored_app['app_name'] == p_name:
                     self.app.log.info(f'Removing {p_name} from application list')
-                    self.app.db.remove(doc_ids=[app['doc_id']])
+                    self.app.db.remove(doc_ids=[stored_app.doc_id])
                     return
 
             self.app.log.warning(f'Application {p_name} not found')
