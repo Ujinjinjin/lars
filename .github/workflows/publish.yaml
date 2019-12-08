@@ -5,8 +5,8 @@ on:
     branches:
       - master
     paths:
-      - .github/workflows/publish.yml
-      - lars/core/version.py
+      - ".github/workflows/publish.yml"
+      - "lars/core/version.py"
 
 jobs:
   deploy:
