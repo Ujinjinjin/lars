@@ -9,7 +9,7 @@ LONG_DESCRIPTION = f.read()
 f.close()
 
 setup(
-    name='lars',
+    name='ulars',
     version=VERSION,
     description='From txt to sqlite3 parser of logs',
     long_description=LONG_DESCRIPTION,
