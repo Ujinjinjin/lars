@@ -70,6 +70,7 @@ db_filename: "logs.sqlite3"
 9951e948f4a64c859a8589ae111a1eea | 2019-12-05 21:10:06.2561727Z | Debug | Code.Engines.Player.PlayerInputToActionEngine | Found 0 entities with <PlayerInputEntityViewStruct, ActionEntityStruct>
 c52029ca8e694c98845a417688c4f0c3 | 2019-12-05 21:10:06.4945353Z | Debug | Code.Engines.Common.MovementEngine | Found 0 entities with <ActionEntityStruct>
 1e4c0ba2ebcb486499bfa06f592e3b3d | 2019-12-05 21:10:06.4945353Z | Debug | Code.Engines.Common.MovementEngine | Found 0 entities with <ActionEntityStruct>
+e7515daf01484f5196e7bb1a0b6b3329 | 2019-12-05 21:10:06.4945353Z | Debug | Code.Engines.Common.MovementEngine | Found 0 entities with <ActionEntityStruct>
 ```
 
 ## Development
