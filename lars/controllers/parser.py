@@ -6,6 +6,7 @@ from progress.bar import IncrementalBar
 
 from ..utilities.db_context import DbContext
 from ..utilities.parg_validator import PargValidator
+from ..utilities.sql_builder import SqlBuilder
 
 try:
     from yaml import CLoader as Loader, CDumper as Dumper
@@ -109,6 +110,7 @@ class Parser(Controller):
             config = yaml.load(lars_config_file, Loader)
             headers = config['headers']
             primary_key = config['primary_key']
+            table_name = config['table_name']
             separator = config['separator']
             encoding = config['encoding']
             db_filename = config['db_filename']
@@ -129,7 +131,12 @@ class Parser(Controller):
             self.app.log.info(f'Logs count: {logs_count}')
 
         # Init database
-        db = DbContext(path, db_filename, headers, primary_key)
+        # noinspection PyBroadException
+        try:
+            db = DbContext(path, db_filename, primary_key, SqlBuilder(table_name, headers, primary_key))
+        except Exception as e:
+            self.app.log.error(f'Error occurred during database connection establishment: {e}')
+            return
 
         # Init progress bar
         progress_bar = IncrementalBar('Processing: ', max=logs_count)
@@ -144,6 +151,7 @@ class Parser(Controller):
 
             splitted_log = log.split(separator)
             if len(splitted_log) != headers_count:
+                progress_bar.finish()
                 self.app.log.error(f'Column count of some logs does not match headers length!\n'
                                    f'Log: {log}')
                 return
@@ -152,12 +160,16 @@ class Parser(Controller):
             for j in range(headers_count):
                 log_dict[headers[j]] = splitted_log[j]
 
-            if not db.try_insert_log(log_dict):
-                self.app.log.error(f'Error inserting log to database')
+            # noinspection PyBroadException
+            try:
+                db.insert_log(log_dict)
+            except Exception as e:
+                progress_bar.finish()
+                self.app.log.error(f'Error inserting log to database: {e}')
                 return
 
         # Dispose objects
         progress_bar.finish()
         db.dispose()
 
-        self.app.log.error(f'Finished parsing logs!')
+        self.app.log.info(f'Finished parsing logs!')
