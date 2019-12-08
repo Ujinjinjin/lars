@@ -77,46 +77,48 @@ class Parser(Controller):
             path = path[:-1]
 
         # Find .log file
-        log_file_names = [f for f in glob.glob(path + '**/*.log', recursive=False)]
-        log_file_name: str
+        log_filenames = [f for f in glob.glob(path + '**/*.log', recursive=False)]
+        log_filename: str
 
-        if len(log_file_names) == 0:
+        if len(log_filenames) == 0:
             self.app.log.error(f'Not found any .log files in specified path: {path}')
             return
-        elif len(log_file_names) == 1:
-            log_file_name = log_file_names[0]
+        elif len(log_filenames) == 1:
+            log_filename = log_filenames[0]
         else:
             prompt = Prompt('Chose .log file to parse',
-                            options=log_file_names,
+                            options=log_filenames,
                             numbered=True,
                             )
-            log_file_name = prompt.input
+            log_filename = prompt.input
 
-        self.app.log.info(f'Log file: {log_file_name}')
+        self.app.log.info(f'Log file: {log_filename}')
 
         # Find 'lars.yml' file
-        lars_config_file_names = [f for f in glob.glob(path + '**/lars.yml', recursive=False)]
-        if len(lars_config_file_names) == 0:
+        lars_config_filenames = [f for f in glob.glob(path + '**/lars.yml', recursive=False)]
+        if len(lars_config_filenames) == 0:
             self.app.log.error(f'Not found "lars.yml" file in specified path: {path}')
             return
         else:
-            lars_config_file_name = lars_config_file_names[0]
+            lars_config_filename = lars_config_filenames[0]
 
-        self.app.log.info(f'Config file: {lars_config_file_name}')
+        self.app.log.info(f'Config file: {lars_config_filename}')
 
         # Read lars config
-        with open(lars_config_file_name, 'r', encoding='utf8') as lars_config_file:
+        with open(lars_config_filename, 'r', encoding='utf8') as lars_config_file:
             config = yaml.load(lars_config_file, Loader)
             headers = config['headers']
             primary_key = config['primary_key']
             separator = config['separator']
+            encoding = config['encoding']
+            db_filename = config['db_filename']
             headers_count = len(headers)
 
             self.app.log.info(f'Headers: {headers}')
             self.app.log.info(f'Primary key: {primary_key}')
 
         # Read logs from file into array
-        with open(log_file_name, 'r', encoding='utf8') as log_file:
+        with open(log_filename, 'r', encoding=encoding) as log_file:
             log_array = log_file.read().split('\n')
             logs_count = len(log_array)
 
@@ -127,7 +129,7 @@ class Parser(Controller):
             self.app.log.info(f'Logs count: {logs_count}')
 
         # Init database
-        db = DbContext(path, headers, primary_key)
+        db = DbContext(path, db_filename, headers, primary_key)
 
         # Init progress bar
         progress_bar = IncrementalBar('Processing: ', max=logs_count)

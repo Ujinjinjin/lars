@@ -5,7 +5,7 @@ from .sql_builder import SqlBuilder
 
 
 class DbContext:
-    def __init__(self, path: str, column_names: List[str], primary_key: str, db_name: str = 'logs.sqlite3'):
+    def __init__(self, path: str, db_name: str, column_names: List[str], primary_key: str):
         self.connection = sqlite3.connect(f'{path}/{db_name}')
         self.builder = SqlBuilder(column_names, primary_key)
         self.primary_key = primary_key
