@@ -1,9 +1,16 @@
 import glob
+import yaml
 from cement import Controller, ex
 from cement.utils.shell import Prompt
 from progress.bar import IncrementalBar
 
+from ..utilities.db_context import DbContext
 from ..utilities.parg_validator import PargValidator
+
+try:
+    from yaml import CLoader as Loader, CDumper as Dumper
+except ImportError:
+    from yaml import Loader, Dumper
 
 
 class Parser(Controller):
@@ -87,21 +94,25 @@ class Parser(Controller):
 
         self.app.log.info(f'Log file: {log_file_name}')
 
-        # Find 'header.lars' file
-        header_file_names = [f for f in glob.glob(path + '**/header.lars', recursive=False)]
-        if len(header_file_names) == 0:
-            self.app.log.error(f'Not found header.lars file in specified path: {path}')
+        # Find 'lars.yml' file
+        lars_config_file_names = [f for f in glob.glob(path + '**/lars.yml', recursive=False)]
+        if len(lars_config_file_names) == 0:
+            self.app.log.error(f'Not found "lars.yml" file in specified path: {path}')
             return
         else:
-            header_file_name = header_file_names[0]
+            lars_config_file_name = lars_config_file_names[0]
 
-        self.app.log.info(f'Header file: {header_file_name}')
+        self.app.log.info(f'Config file: {lars_config_file_name}')
 
-        # Read headers from file
-        with open(header_file_name, 'r', encoding='utf8') as header_file:
-            headers = header_file.readline().replace('\n', '').split(' | ')
+        # Read lars config
+        with open(lars_config_file_name, 'r', encoding='utf8') as lars_config_file:
+            config = yaml.load(lars_config_file, Loader)
+            headers = config['headers']
+            primary_key = config['primary_key']
             headers_count = len(headers)
+
             self.app.log.info(f'Headers: {headers}')
+            self.app.log.info(f'Primary key: {primary_key}')
 
         # Read logs from file into array
         with open(log_file_name, 'r', encoding='utf8') as log_file:
@@ -114,8 +125,11 @@ class Parser(Controller):
 
             self.app.log.info(f'Logs count: {logs_count}')
 
+        # Init database
+        db = DbContext(path, headers, primary_key)
+
         # Init progress bar
-        progress_bar = IncrementalBar('Processing:', max=logs_count)
+        progress_bar = IncrementalBar('Processing: ', max=logs_count)
 
         # Parse logs to sqlite3
         for i in range(logs_count):
@@ -135,4 +149,12 @@ class Parser(Controller):
             for j in range(headers_count):
                 log_dict[headers[j]] = splitted_log[j]
 
+            if not db.try_insert_log(log_dict):
+                self.app.log.error(f'Error inserting log to database')
+                return
+
+        # Dispose objects
         progress_bar.finish()
+        db.dispose()
+
+        self.app.log.error(f'Finished parsing logs!')
