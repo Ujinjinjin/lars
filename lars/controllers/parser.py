@@ -109,6 +109,7 @@ class Parser(Controller):
             config = yaml.load(lars_config_file, Loader)
             headers = config['headers']
             primary_key = config['primary_key']
+            separator = config['separator']
             headers_count = len(headers)
 
             self.app.log.info(f'Headers: {headers}')
@@ -139,7 +140,7 @@ class Parser(Controller):
             if len(log) == 0:
                 continue
 
-            splitted_log = log.split(' | ')
+            splitted_log = log.split(separator)
             if len(splitted_log) != headers_count:
                 self.app.log.error(f'Column count of some logs does not match headers length!\n'
                                    f'Log: {log}')
