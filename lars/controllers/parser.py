@@ -5,7 +5,7 @@ from cement.utils.shell import Prompt
 from progress.bar import IncrementalBar
 
 from ..utilities.db_context import DbContext
-from ..utilities.parg_validator import PargValidator
+from ..utilities.value_validator import ValueValidator
 from ..utilities.sql_builder import SqlBuilder
 
 try:
@@ -47,7 +47,7 @@ class Parser(Controller):
         p_path = self.app.pargs.path
 
         # Validate arguments
-        if not PargValidator.single_value(p_id, p_name, p_path):
+        if not ValueValidator.single_value(p_id, p_name, p_path):
             self.app.log.error('Log file path is not specified. Please, use parse --help for more information')
             return
 
@@ -108,12 +108,28 @@ class Parser(Controller):
         # Read lars config
         with open(lars_config_filename, 'r', encoding='utf8') as lars_config_file:
             config = yaml.load(lars_config_file, Loader)
-            headers = config['headers']
-            primary_key = config['primary_key']
-            table_name = config['table_name']
-            separator = config['separator']
-            encoding = config['encoding']
-            db_filename = config['db_filename']
+            headers = config.get('headers', None)
+            primary_key = config.get('primary_key', None)
+            table_name = config.get('table_name', None)
+            separator = config.get('separator', None)
+            encoding = config.get('encoding', None)
+            db_filename = config.get('db_filename', None)
+
+            if not ValueValidator.all_values(headers, primary_key, table_name, separator, encoding, db_filename):
+                self.app.log.error('Error reading config file, please, use following example to create config file:')
+                self.app.log.warning('\rheaders:\n' +
+                                     '  - guid\n' +
+                                     '  - log_date\n' +
+                                     '  - log_level\n' +
+                                     '  - logger_name\n' +
+                                     '  - msg\n' +
+                                     'primary_key: "guid"\n' +
+                                     'table_name: "logs"\n' +
+                                     'separator: " | "\n' +
+                                     'encoding: "utf8"\n' +
+                                     'db_filename: "logs.sqlite3"')
+                return
+
             headers_count = len(headers)
 
             self.app.log.info(f'Headers: {headers}')

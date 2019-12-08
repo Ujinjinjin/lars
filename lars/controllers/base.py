@@ -16,7 +16,7 @@ class Base(Controller):
         description = 'From txt to sqlite3 parser of logs'
 
         # text displayed at the bottom of --help output
-        epilog = 'Usage: lars command --foo bar'
+        epilog = 'Usage: lars parse --path ~/Documents/Logs/'
 
         # controller level arguments. ex: 'lars --version'
         arguments = [

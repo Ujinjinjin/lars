@@ -1,5 +1,5 @@
 from cement import Controller, ex
-from ..utilities.parg_validator import PargValidator
+from ..utilities.value_validator import ValueValidator
 
 
 class Apps(Controller):
@@ -95,7 +95,7 @@ class Apps(Controller):
         p_id = self.app.pargs.id
         p_name = self.app.pargs.name
 
-        if not PargValidator.single_value(p_id, p_name):
+        if not ValueValidator.single_value(p_id, p_name):
             self.app.log.error('Not specified application to remove. Please, use --help for more information')
             return
 

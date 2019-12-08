@@ -1,4 +1,3 @@
-
 from setuptools import setup, find_packages
 from lars.core.version import get_version
 
@@ -25,4 +24,13 @@ setup(
         [console_scripts]
         lars = lars.main:main
     """,
+    install_requires=[
+        'cement==3.0.4',
+        'jinja2',
+        'pyyaml',
+        'colorlog',
+        'tinydb',
+        'progress',
+        'PyYAML',
+    ]
 )

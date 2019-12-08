@@ -1,4 +1,4 @@
-class PargValidator:
+class ValueValidator:
     @staticmethod
     def single_value(*args) -> bool:
         value_count: int = 0
