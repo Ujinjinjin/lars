@@ -2,7 +2,7 @@
 
 ## Installation
 
-```
+```shell script
 $ pip install ulars
 ```
 
@@ -79,22 +79,24 @@ This project includes a number of helpers in the `Makefile` to streamline common
 
 ### Environment Setup
 
-The following demonstrates setting up and working with a development environment:
+The following block demonstrates how to set up and work with development environment:
 
-```
-### create a virtualenv for development
+#### create a virtualenv for development
 
+```shell script
 $ make virtualenv
 
 $ source env/bin/activate
+```
 
+#### run lars cli application
 
-### run lars cli application
-
+```shell script
 $ lars --help
+```
 
+#### run pytest / coverage
 
-### run pytest / coverage
-
+```shell script
 $ make test
 ```
